@@ -11,7 +11,7 @@ export interface Seminar {
 
 export const seminarsApi = createApi({
   reducerPath: "seminarsApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "https://5rdpjr-3001.csb.app/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3001/" }),
   tagTypes: ["Seminar"],
   endpoints: (builder) => ({
     getSeminars: builder.query<Seminar[], void>({
