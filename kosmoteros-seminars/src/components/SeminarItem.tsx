@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { Seminar, useDeleteSeminarMutation, useUpdateSeminarMutation } from '../api/seminarsApi';
-import Modal from './Modal';
-import ConfirmDialog from './ConfirmDialog';
-import { motion } from 'framer-motion';
+import React, { useState } from "react";
+import {
+  Seminar,
+  useDeleteSeminarMutation,
+  useUpdateSeminarMutation,
+} from "../api/seminarsApi";
+import Modal from "./Modal";
+import ConfirmDialog from "./ConfirmDialog";
+import { motion } from "framer-motion";
 
 interface SeminarItemProps {
   seminar: Seminar;
@@ -26,9 +30,11 @@ const SeminarItem: React.FC<SeminarItemProps> = ({ seminar }) => {
     setIsEditOpen(false);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
@@ -36,31 +42,38 @@ const SeminarItem: React.FC<SeminarItemProps> = ({ seminar }) => {
 
   return (
     <motion.div
-      className="seminar-item"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
+      className="seminar-card"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.4 }}
     >
-      <img src={seminar.photo} alt={seminar.title} className="seminar-photo" />
-      <div className="seminar-info">
-        <h2>{seminar.title}</h2>
-        <p>{seminar.description}</p>
-        <p>{seminar.date} в {seminar.time}</p>
+      <div className="seminar-image">
+        <img src={seminar.photo} alt={seminar.title} />
       </div>
-      <div className="seminar-actions">
-        <button onClick={() => setIsEditOpen(true)} className="edit-button">
-          Редактировать
-        </button>
-        <button onClick={() => setIsConfirmOpen(true)} className="delete-button">
-          Удалить
-        </button>
+      <div className="seminar-content">
+        <h2 className="seminar-title">{seminar.title}</h2>
+        <p className="seminar-description">{seminar.description}</p>
+        <p className="seminar-datetime">
+          {seminar.date} в {seminar.time}
+        </p>
+        <div className="seminar-actions">
+          <button onClick={() => setIsEditOpen(true)} className="btn btn-edit">
+            Редактировать
+          </button>
+          <button
+            onClick={() => setIsConfirmOpen(true)}
+            className="btn btn-delete"
+          >
+            Удалить
+          </button>
+        </div>
       </div>
 
       {isEditOpen && (
         <Modal onClose={() => setIsEditOpen(false)}>
           <h3>Редактировать семинар</h3>
-          <form onSubmit={handleEditSubmit}>
+          <form onSubmit={handleEditSubmit} className="modal-form">
             <label>
               Название:
               <input
@@ -68,6 +81,7 @@ const SeminarItem: React.FC<SeminarItemProps> = ({ seminar }) => {
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
+                className="input-field"
               />
             </label>
             <label>
@@ -76,6 +90,7 @@ const SeminarItem: React.FC<SeminarItemProps> = ({ seminar }) => {
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
+                className="input-field textarea"
               />
             </label>
             <label>
@@ -85,6 +100,7 @@ const SeminarItem: React.FC<SeminarItemProps> = ({ seminar }) => {
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
+                className="input-field"
               />
             </label>
             <label>
@@ -94,9 +110,12 @@ const SeminarItem: React.FC<SeminarItemProps> = ({ seminar }) => {
                 name="time"
                 value={formData.time}
                 onChange={handleInputChange}
+                className="input-field"
               />
             </label>
-            <button type="submit">Сохранить изменения</button>
+            <button type="submit" className="btn btn-submit">
+              Сохранить изменения
+            </button>
           </form>
         </Modal>
       )}
