@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import { Seminar, useGetSeminarsQuery } from './api/seminarsApi';
-import SeminarItem from './components/SeminarItem';
+import React, { useState } from "react";
+import { useGetSeminarsQuery } from "./api/seminarsApi";
+import SeminarItem from "./components/SeminarItem";
 
 const App: React.FC = () => {
-
   const { data: seminars, error, isLoading } = useGetSeminarsQuery();
-  const [filteredSeminars, setFilteredSeminars] = useState<Seminar[]>(seminars || []);
+  const [query, setQuery] = useState<string>("");
 
   if (isLoading) return <div>Загрузка...</div>;
   if (error) return <div>Ошибка загрузки данных.</div>;
   if (!seminars) return <div>Ошибка загрузки семинаров.</div>;
+
+  const filteredSeminars = seminars.filter((seminar) =>
+    seminar.title.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
     <div className="App">
@@ -22,14 +25,8 @@ const App: React.FC = () => {
         <input
           type="text"
           placeholder="Поиск по названию..."
-          onChange={(e) => {
-            const query = e.target.value.toLowerCase();
-            setFilteredSeminars(
-              seminars.filter((seminar) =>
-                seminar.title.toLowerCase().includes(query)
-              )
-            );
-          }}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
         />
       </div>
 

@@ -1,5 +1,4 @@
-
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export interface Seminar {
   id: number;
@@ -11,33 +10,43 @@ export interface Seminar {
 }
 
 export const seminarsApi = createApi({
-  reducerPath: 'seminarsApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3001/' }),
-  tagTypes: ['Seminar'],
+  reducerPath: "seminarsApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "https://5rdpjr-3001.csb.app/" }),
+  tagTypes: ["Seminar"],
   endpoints: (builder) => ({
     getSeminars: builder.query<Seminar[], void>({
-      query: () => 'seminars',
+      query: () => "seminars",
       providesTags: (result) =>
         result
-          ? [...result.map(({ id }) => ({ type: 'Seminar' as const, id })), { type: 'Seminar', id: 'LIST' }]
-          : [{ type: 'Seminar', id: 'LIST' }],
+          ? [
+              ...result.map(({ id }) => ({ type: "Seminar" as const, id })),
+              { type: "Seminar", id: "LIST" },
+            ]
+          : [{ type: "Seminar", id: "LIST" }],
     }),
     deleteSeminar: builder.mutation<{ success: boolean; id: number }, number>({
       query: (id) => ({
         url: `seminars/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [{ type: 'Seminar', id }, { type: 'Seminar', id: 'LIST' }],
+      invalidatesTags: (result, error, id) => [
+        { type: "Seminar", id },
+        { type: "Seminar", id: "LIST" },
+      ],
     }),
     updateSeminar: builder.mutation<Seminar, Partial<Seminar>>({
       query: ({ id, ...patch }) => ({
         url: `seminars/${id}`,
-        method: 'PATCH',
+        method: "PATCH",
         body: patch,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: 'Seminar', id }],
+      invalidatesTags: (result, error, { id }) => [{ type: "Seminar", id }],
     }),
   }),
 });
 
-export const { useGetSeminarsQuery, useDeleteSeminarMutation, useUpdateSeminarMutation } = seminarsApi;
+export const {
+  useGetSeminarsQuery,
+  useDeleteSeminarMutation,
+  useUpdateSeminarMutation,
+} = seminarsApi;
