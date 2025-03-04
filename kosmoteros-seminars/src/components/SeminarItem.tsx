@@ -1,0 +1,115 @@
+import React, { useState } from 'react';
+import { Seminar, useDeleteSeminarMutation, useUpdateSeminarMutation } from '../api/seminarsApi';
+import Modal from './Modal';
+import ConfirmDialog from './ConfirmDialog';
+import { motion } from 'framer-motion';
+
+interface SeminarItemProps {
+  seminar: Seminar;
+}
+
+const SeminarItem: React.FC<SeminarItemProps> = ({ seminar }) => {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [deleteSeminar] = useDeleteSeminarMutation();
+  const [updateSeminar] = useUpdateSeminarMutation();
+  const [formData, setFormData] = useState({ ...seminar });
+
+  const handleDelete = async () => {
+    await deleteSeminar(seminar.id);
+    setIsConfirmOpen(false);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await updateSeminar(formData);
+    setIsEditOpen(false);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  return (
+    <motion.div
+      className="seminar-item"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <img src={seminar.photo} alt={seminar.title} className="seminar-photo" />
+      <div className="seminar-info">
+        <h2>{seminar.title}</h2>
+        <p>{seminar.description}</p>
+        <p>{seminar.date} в {seminar.time}</p>
+      </div>
+      <div className="seminar-actions">
+        <button onClick={() => setIsEditOpen(true)} className="edit-button">
+          Редактировать
+        </button>
+        <button onClick={() => setIsConfirmOpen(true)} className="delete-button">
+          Удалить
+        </button>
+      </div>
+
+      {isEditOpen && (
+        <Modal onClose={() => setIsEditOpen(false)}>
+          <h3>Редактировать семинар</h3>
+          <form onSubmit={handleEditSubmit}>
+            <label>
+              Название:
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+              />
+            </label>
+            <label>
+              Описание:
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+              />
+            </label>
+            <label>
+              Дата:
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleInputChange}
+              />
+            </label>
+            <label>
+              Время:
+              <input
+                type="time"
+                name="time"
+                value={formData.time}
+                onChange={handleInputChange}
+              />
+            </label>
+            <button type="submit">Сохранить изменения</button>
+          </form>
+        </Modal>
+      )}
+
+      {isConfirmOpen && (
+        <ConfirmDialog
+          message="Вы уверены, что хотите удалить этот семинар?"
+          onConfirm={handleDelete}
+          onCancel={() => setIsConfirmOpen(false)}
+        />
+      )}
+    </motion.div>
+  );
+};
+
+export default SeminarItem;
