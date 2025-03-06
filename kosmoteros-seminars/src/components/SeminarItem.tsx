@@ -5,7 +5,6 @@ import {
   useUpdateSeminarMutation,
 } from "../api/seminarsApi";
 import Modal from "./Modal";
-import ConfirmDialog from "./ConfirmDialog";
 import { motion } from "framer-motion";
 
 interface SeminarItemProps {
@@ -14,14 +13,14 @@ interface SeminarItemProps {
 
 const SeminarItem: React.FC<SeminarItemProps> = ({ seminar }) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [deleteSeminar] = useDeleteSeminarMutation();
   const [updateSeminar] = useUpdateSeminarMutation();
   const [formData, setFormData] = useState({ ...seminar });
 
   const handleDelete = async () => {
     await deleteSeminar(seminar.id);
-    setIsConfirmOpen(false);
+    setIsDeleteOpen(false);
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
@@ -62,7 +61,7 @@ const SeminarItem: React.FC<SeminarItemProps> = ({ seminar }) => {
             Редактировать
           </button>
           <button
-            onClick={() => setIsConfirmOpen(true)}
+            onClick={() => setIsDeleteOpen(true)}
             className="btn btn-delete"
           >
             Удалить
@@ -120,12 +119,21 @@ const SeminarItem: React.FC<SeminarItemProps> = ({ seminar }) => {
         </Modal>
       )}
 
-      {isConfirmOpen && (
-        <ConfirmDialog
-          message="Вы уверены, что хотите удалить этот семинар?"
-          onConfirm={handleDelete}
-          onCancel={() => setIsConfirmOpen(false)}
-        />
+      {isDeleteOpen && (
+        <Modal onClose={() => setIsDeleteOpen(false)}>
+          <h3>Вы уверены, что хотите удалить этот семинар?</h3>
+          <div className="confirm-buttons">
+            <button onClick={handleDelete} className="btn btn-delete">
+              Да
+            </button>
+            <button
+              onClick={() => setIsDeleteOpen(false)}
+              className="btn btn-edit"
+            >
+              Нет
+            </button>
+          </div>
+        </Modal>
       )}
     </motion.div>
   );
